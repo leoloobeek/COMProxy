@@ -149,9 +149,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>Source.def</ModuleDefinitionFile>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(SolutionDir)$(Platform)\$(Configuration)\TestCOMServer.dll C:\users\leo\Desktop</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
