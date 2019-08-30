@@ -149,9 +149,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(SolutionDir)$(Platform)\$(Configuration)\TestCOMClient.exe C:\users\leo\Desktop</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="TestCOMClient.cpp" />
