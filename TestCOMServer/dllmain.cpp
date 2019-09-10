@@ -2,7 +2,7 @@
 #include <comutil.h> // #include for _bstr_t
 #include <string>
 
-BOOL FindOriginalCOMServer(wchar_t* GUID, wchar_t** DLLName);
+BOOL FindOriginalCOMServer(wchar_t* GUID, wchar_t* DLLName);
 DWORD MyThread();
 typedef HRESULT(__stdcall *_DllGetClassObject)(REFCLSID rclsid, REFIID riid, LPVOID* ppv);
 
@@ -66,7 +66,7 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv)
 	HRESULT hResult = StringFromCLSID(rclsid, &lplpsz);
 	wchar_t* DLLName = new wchar_t[MAX_PATH];
 
-	if (!FindOriginalCOMServer((wchar_t*)lplpsz, &DLLName))
+	if (!FindOriginalCOMServer((wchar_t*)lplpsz, DLLName))
 	{
 		wprintf(L"[-] Couldn't find original COM server\n");
 		return S_FALSE;
@@ -103,15 +103,13 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv)
 	return S_OK;
 }
 
-BOOL FindOriginalCOMServer(wchar_t* GUID, wchar_t** DLLName)
+BOOL FindOriginalCOMServer(wchar_t* GUID, wchar_t* DLLName)
 {
 	HKEY hKey;
 	HKEY hCLSIDKey;
-	wchar_t name[MAX_PATH];
 	DWORD nameLength = MAX_PATH;
 
 	wprintf(L"[*] Beginning search for GUID %s\n", GUID);
-
 	LONG lResult = RegOpenKeyExW(HKEY_LOCAL_MACHINE, (LPCWSTR)L"SOFTWARE\\Classes\\CLSID", 0, KEY_READ, &hKey);
 	if (lResult != ERROR_SUCCESS) {
 		wprintf(L"[-] Error getting CLSID path\n");
@@ -127,15 +125,13 @@ BOOL FindOriginalCOMServer(wchar_t* GUID, wchar_t** DLLName)
 	}
 
 	// Read the value of HKLM's InProcServer32
-	lResult = RegGetValueW(hCLSIDKey, (LPCWSTR)L"InProcServer32", NULL, RRF_RT_ANY, NULL, (PVOID)&name, &nameLength);
+	lResult = RegGetValueW(hCLSIDKey, (LPCWSTR)L"InProcServer32", NULL, RRF_RT_ANY, NULL, (PVOID)DLLName, &nameLength);
 	if (lResult != ERROR_SUCCESS) {
 		wprintf(L"[-] Error getting InProcServer32 value: %d\n", lResult);
 		RegCloseKey(hKey);
 		RegCloseKey(hCLSIDKey);
 		return FALSE;
 	}
-
-	*DLLName = name;
 
 	return TRUE;
 }
